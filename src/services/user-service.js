@@ -1,19 +1,25 @@
 const { StatusCodes } = require('http-status-codes');
-const { UserRepository } = require('../repositories');
+const { UserRepository,RoleRepository } = require('../repositories');
 const AppError = require('../utils/errors/app-error');
-const { Auth, Enums } = require('../utils/common');
+const {  Enums } = require('../utils/common');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken')
 const {ServerConfig}=require('../config')
-const userRepo = new UserRepository();
 
+const userRepo = new UserRepository();
+const roleRepo = new RoleRepository();
 
 async function create(data) {
     try {
         const user = await userRepo.create(data);
-       
-  
+        
+        const res=await roleRepo.getRoleByName(Enums.USER_ROLE_ENUMS.CUSTOMER)
+    
+        user.addRole(res);
         return user;
+         
+  
+     
     } catch(error) {
         console.log(error.name);
         if(error.name == 'SequelizeValidationError' || error.name == 'SequelizeUniqueConstraintError') {
