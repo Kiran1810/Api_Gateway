@@ -12,15 +12,9 @@ const roleRepo = new RoleRepository();
 async function create(data) {
     try {
         const user = await userRepo.create(data);
-        
-        const res=await roleRepo.getRoleByName(Enums.USER_ROLE_ENUMS.CUSTOMER)
-    
-        user.addRole(res);
         return user;
-         
-  
-     
-    } catch(error) {
+         } 
+    catch(error) {
         console.log(error.name);
         if(error.name == 'SequelizeValidationError' || error.name == 'SequelizeUniqueConstraintError') {
             let explanation = [];
@@ -54,24 +48,13 @@ throw error;
     }
 }
 
-    function checkPassword(plainPassword,encryptedPassword){
-    const res=  bcrypt.compareSync(plainPassword,encryptedPassword)
-    return res;
-}
-
- function createToken(input){
- const res= jwt.sign(input,ServerConfig.JWT_SECRET_KEY,{expiresIn:ServerConfig.EXPIRES_IN})
- return res;
-}
-
  
 function isAuthentication(token){
     try{
         if (!token){
             throw new AppError('missing JWT token', StatusCodes.BAD_REQUEST);}
       const user= verifyToken(token)
-     
-return user.id;
+     return user.id;
 }
     catch(error){
         if (error instanceof AppError) throw error;
@@ -82,8 +65,59 @@ return user.id;
 
     throw new AppError('something went wrong', StatusCodes.INTERNAL_SERVER_ERROR);
     }
+}
 
 
+async function addRoleToUser(data){
+    try{
+        const user=await  userRepo.get(data.id)
+        if(!user){
+            throw new AppError('cannot find user with same email', StatusCodes.NOT_FOUND);
+        }
+        const role=await roleRepo.getRoleByName(data.role)
+        if(!role){
+            throw new AppError('cannot find role with given user', StatusCodes.NOT_FOUND);
+        }
+        user.addRole(role);
+        return user;
+    }
+    catch(error){
+        if (error instanceof AppError) throw error;
+        throw new AppError('something went wrong', StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+
+
+async function isAdmin(id){
+    try{
+        const user=await userRepo.get(id)
+        if(!user){
+            throw new AppError('cannot find user with same email', StatusCodes.NOT_FOUND);
+        }
+        const adminrole=await roleRepo.getRoleByName(Enums.USER_ROLE_ENUMS.ADMIN)
+            if(!adminrole){
+                throw new AppError('cannot find role with given user', StatusCodes.NOT_FOUND);
+         }
+       return  user.hasRole(adminrole);
+    }
+
+catch(error){
+    if (error instanceof AppError) throw error;
+    throw new AppError('something went wrong', StatusCodes.INTERNAL_SERVER_ERROR);
+   }
+}
+
+
+function checkPassword(plainPassword,encryptedPassword){
+    const res=  bcrypt.compareSync(plainPassword,encryptedPassword)
+    return res;
+}
+
+
+ function createToken(input){
+ const res= jwt.sign(input,ServerConfig.JWT_SECRET_KEY,{expiresIn:ServerConfig.EXPIRES_IN})
+ return res;
 }
 
 
@@ -92,7 +126,6 @@ function verifyToken(token){
     return res;
 }
 
-module.exports = {
-    create,signIn,isAuthentication
-   
-}
+
+
+module.exports = {create,signIn,isAuthentication,addRoleToUser,isAdmin}
