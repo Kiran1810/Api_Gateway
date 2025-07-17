@@ -16,7 +16,7 @@ const options = {
       },
     ],
   },
-  apis: [path.join(__dirname, './routes/v1/*.js')], // 🔍 Correct path relative to this file
+  apis: [path.join(__dirname, './routes/**/*.js')], // 🔍 Correct path relative to this file
 };
 
 const swaggerSpec = swaggerJsdoc(options);

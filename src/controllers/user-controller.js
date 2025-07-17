@@ -66,12 +66,34 @@ async function role(req, res) {
 }
 
 
+async function getAllUser(req,res){
+  
+
+    try{
+    
+           const user=await UserService.findUser(req.query);
+           SuccessResponse.data=user;
+         
+           return res
+               .status(StatusCodes.CREATED)
+               .json(SuccessResponse)
+    }
+   
+    catch(error){
+       
+       ErrorResponse.error=error;
+       
+       return res
+               .status(error.statusCode )
+               .json(ErrorResponse)
+   
+    }}
 
 
 
 
 
 module.exports = {
-    signup, signin,role
+    signup, signin,role,getAllUser
   
 }

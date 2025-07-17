@@ -12,6 +12,8 @@ const roleRepo = new RoleRepository();
 async function create(data) {
     try {
         const user = await userRepo.create(data);
+        const role=await roleRepo.getRoleByName(Enums.userRole.CUSTOMER)
+        user.addRole(role);
         return user;
          } 
     catch(error) {
@@ -48,6 +50,16 @@ throw error;
     }
 }
 
+function checkPassword(plainPassword,encryptedPassword){
+    const res=  bcrypt.compareSync(plainPassword,encryptedPassword)
+    return res;
+}
+
+
+ function createToken(input){
+ const res= jwt.sign(input,ServerConfig.JWT_SECRET_KEY,{expiresIn:ServerConfig.EXPIRES_IN})
+ return res;
+}
  
 function isAuthentication(token){
     try{
@@ -61,10 +73,19 @@ function isAuthentication(token){
         if(error.name=='JsonWebTokenError'){
             throw new AppError('invalid jwt token', StatusCodes.BAD_REQUEST);
         }
+        if(error.name=="TokenExpiredError"){
+            throw new AppError('TimeOut!! try after some time', StatusCodes.REQUEST_TIMEOUT);
+        }
+        console.log(error);
         console.log(error);
 
     throw new AppError('something went wrong', StatusCodes.INTERNAL_SERVER_ERROR);
     }
+}
+
+function verifyToken(token){
+    const res= jwt.verify(token,ServerConfig.JWT_SECRET_KEY);
+    return res;
 }
 
 
@@ -108,24 +129,17 @@ catch(error){
    }
 }
 
-
-function checkPassword(plainPassword,encryptedPassword){
-    const res=  bcrypt.compareSync(plainPassword,encryptedPassword)
-    return res;
-}
-
-
- function createToken(input){
- const res= jwt.sign(input,ServerConfig.JWT_SECRET_KEY,{expiresIn:ServerConfig.EXPIRES_IN})
- return res;
-}
-
-
-function verifyToken(token){
-    const res= jwt.verify(token,ServerConfig.JWT_SECRET_KEY);
-    return res;
+async function findUser(){
+    try{
+         const responce=await userRepo.getAll();
+         return responce
+    }
+    catch(error){
+         console.log(error);
+         throw error
+    }
 }
 
 
 
-module.exports = {create,signIn,isAuthentication,addRoleToUser,isAdmin}
+module.exports = {create,signIn,isAuthentication,addRoleToUser,isAdmin,findUser}

@@ -79,4 +79,17 @@ router.post('/signin', AuthRequestMiddlewares.validateAuthRequest, UserControlle
  */
 router.post('/role', AuthRequestMiddlewares.checkAuth, AuthRequestMiddlewares.isAdmin, UserController.role);
 
+/**
+ * @swagger
+ * /api/user:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: List of users
+ */
+router.get("/", UserController.getAllUser);
+
+
 module.exports = router;
