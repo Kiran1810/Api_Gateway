@@ -4,7 +4,7 @@ const {
 } = require('sequelize');
 const bcrypt=require("bcrypt")
 module.exports = (sequelize, DataTypes) => {
-  class api extends Model {
+  class Api extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.Role, { through: 'User_roles', /* options */ });
+      this.belongsToMany(models.Role, { through: 'User_roles', as:'role' });
     }
   }
-  api.init({
+  Api.init({
     email:{
      type: DataTypes.STRING,
      allowNull:false,
@@ -34,12 +34,12 @@ module.exports = (sequelize, DataTypes) => {
   }
 }, {
     sequelize,
-    modelName: 'api',
+    modelName: 'Api',
   });
 
-  api.beforeCreate(function encryted(user){
+  Api.beforeCreate(function encrypted(user){
       const response=bcrypt.hashSync(user.password,8);
       user.password=response
   })
-  return api;
+  return Api;
 };

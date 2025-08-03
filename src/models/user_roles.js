@@ -17,7 +17,8 @@ module.exports = (sequelize, DataTypes) => {
     apiId:{ 
       type:DataTypes.INTEGER,
       allowNull:false},
-    roleId:{type: DataTypes.INTEGER,
+
+    RoleId:{type: DataTypes.INTEGER,
       allowNull:false}
   }, {
     sequelize,

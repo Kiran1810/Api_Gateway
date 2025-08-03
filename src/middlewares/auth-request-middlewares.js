@@ -23,8 +23,13 @@ function validateAuthRequest(req, res, next) {
 }
 
 async function checkAuth(req,res,next){
-    try{const response= await UserService.isAuthentication(req.headers['x-access-token']);
-    next();}
+    try{
+        const response= await UserService.isAuthentication(req.headers['x-access-token']);
+    if(response){
+        req.user=response;
+        next()
+    }
+   }
     catch(error){
         return res
         .status(error.statusCode)
@@ -32,8 +37,23 @@ async function checkAuth(req,res,next){
     }
 }
     
+async function isAdmin(req,res,next){
+    const response= await UserService.isAdmin( req.user);
+        if(!response){
+            return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json({message:"user is not athorised to change the role"});
+
+        }
+
+    next();
+}
+  
+
+
+
 
 module.exports = {
-    validateAuthRequest,checkAuth
+    validateAuthRequest,checkAuth,isAdmin
    
 }

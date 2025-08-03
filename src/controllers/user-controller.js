@@ -15,6 +15,7 @@ async function signup(req, res) {
             password: req.body.password
         });
         SuccessResponse.data = user;
+        console.log("user",user);
         return res
                 .status(StatusCodes.CREATED)
                 .json(SuccessResponse);
@@ -45,13 +46,71 @@ async function signin(req, res) {
                 .json(ErrorResponse);
     }
 }
+async function role(req, res) {
+    try {
+        const user = await UserService.addRoleToUser({
+           role : req.body.role,
+           id : req.body.id
+        });
+        SuccessResponse.data = user;
+        return res
+                .status(StatusCodes.CREATED)
+                .json(SuccessResponse);
+    } catch(error) {
+        console.log(error);
+        ErrorResponse.error = error;
+        return res
+                .status(error.statusCode)
+                .json(ErrorResponse);
+    }
+}
 
 
+async function getAllUser(req,res){
+  
+
+    try{
+    
+           const user=await UserService.findUser(req.query);
+           SuccessResponse.data=user;
+         
+           return res
+               .status(StatusCodes.CREATED)
+               .json(SuccessResponse)
+    }
+   
+    catch(error){
+       
+       ErrorResponse.error=error;
+       
+       return res
+               .status(error.statusCode )
+               .json(ErrorResponse)
+   
+    }}
+
+
+    async function getUserById(req, res) {
+  try {
+    const user = await UserService.getUserById(req.params.id); // Call to service layer
+    SuccessResponse.data = user;
+
+    return res
+      .status(StatusCodes.OK)
+      .json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.error = error;
+
+    return res
+      .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(ErrorResponse);
+  }
+}
 
 
 
 
 module.exports = {
-    signup, signin
+    signup, signin,role,getAllUser,getUserById
   
 }
