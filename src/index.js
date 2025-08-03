@@ -15,7 +15,8 @@ app.use(express.urlencoded({extended: true}));
 
 const limiter = rateLimit({
 	windowMs: 1 * 60 * 1000, // 15 minutes
-	max: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	max: 10
+  , // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 	
 })
 
@@ -27,9 +28,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/flight-booking', createProxyMiddleware({ target:ServerConfig.BOOKING_SERVICE, changeOrigin: true ,  pathRewrite: {
     '^/flight-booking': '/', 
   },}));
-  app.use('/flightService', createProxyMiddleware({ target: ServerConfig.FLIGHT_SERVICE, changeOrigin: true ,  pathRewrite: {
-    '^/flightService': '/', 
-  },}));
+
 app.use('/api', apiRoutes);
 
 app.listen(ServerConfig.PORT, () => {

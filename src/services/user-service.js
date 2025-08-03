@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const { UserRepository,RoleRepository } = require('../repositories');
 const AppError = require('../utils/errors/app-error');
-const {  Enums } = require('../utils/common');
+const {  USER_ROLE_ENUMS } = require('../utils/common');
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken')
 const {ServerConfig}=require('../config')
@@ -11,9 +11,12 @@ const roleRepo = new RoleRepository();
 
 async function create(data) {
     try {
+          console.log("DATA RECEIVED:", data); 
         const user = await userRepo.create(data);
-        const role=await roleRepo.getRoleByName(Enums.userRole.CUSTOMER)
-        user.addRole(role);
+
+        const role=await roleRepo.getRoleByName(USER_ROLE_ENUMS.CUSTOMER);
+        await user.addRole(role);
+        
         return user;
          } 
     catch(error) {
@@ -140,6 +143,15 @@ async function findUser(){
     }
 }
 
+async function getUserById(id) {
+  try {
+    const response = await userRepo.getUserById(id); // Assuming userRepo has a getById method
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
 
-module.exports = {create,signIn,isAuthentication,addRoleToUser,isAdmin,findUser}
+module.exports = {create,signIn,isAuthentication,addRoleToUser,isAdmin,findUser,getUserById}

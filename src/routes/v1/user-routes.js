@@ -12,7 +12,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/user/signup:
+ * /api/v1/user/signup:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -41,7 +41,7 @@ const router = express.Router();
 router.post('/signup', AuthRequestMiddlewares.validateAuthRequest, UserController.signup);
 /**
  * @swagger
- * /api/user/signin:
+ * /api/v1/user/signin:
  *   post:
  *     summary: Login a user
  *     tags: [Auth]
@@ -67,7 +67,7 @@ router.post('/signin', AuthRequestMiddlewares.validateAuthRequest, UserControlle
 
 /**
  * @swagger
- * /api/user/role:
+ * /api/v1/user/role:
  *   post:
  *     summary: Assign a role to a user
  *     tags: [Auth]
@@ -81,7 +81,7 @@ router.post('/role', AuthRequestMiddlewares.checkAuth, AuthRequestMiddlewares.is
 
 /**
  * @swagger
- * /api/user:
+ * /api/v1/user:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
@@ -90,6 +90,28 @@ router.post('/role', AuthRequestMiddlewares.checkAuth, AuthRequestMiddlewares.is
  *         description: List of users
  */
 router.get("/", UserController.getAllUser);
+
+/**
+ * @swagger
+ * /api/v1/user/{id}:
+ *   get:
+ *     summary: Get user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: The user data
+ *       404:
+ *         description: User not found
+ */
+router.get("/:id", UserController.getUserById);
+
 
 
 module.exports = router;

@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000', // correct base path as per API Gateway
+        url: 'http://localhost:3006', // correct base path as per API Gateway
         description: 'Main API Gateway',
       },
     ],

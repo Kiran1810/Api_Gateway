@@ -90,10 +90,27 @@ async function getAllUser(req,res){
     }}
 
 
+    async function getUserById(req, res) {
+  try {
+    const user = await UserService.getUserById(req.params.id); // Call to service layer
+    SuccessResponse.data = user;
+
+    return res
+      .status(StatusCodes.OK)
+      .json(SuccessResponse);
+  } catch (error) {
+    ErrorResponse.error = error;
+
+    return res
+      .status(error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR)
+      .json(ErrorResponse);
+  }
+}
+
 
 
 
 module.exports = {
-    signup, signin,role,getAllUser
+    signup, signin,role,getAllUser,getUserById
   
 }
